@@ -101,6 +101,5 @@ $admins_result = $conn->query($sql_admins);
 </html>
 
 <?php
-// Close database connection
 $conn->close();
 ?>

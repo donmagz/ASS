@@ -3,7 +3,7 @@ session_start();
 
 require('C:/xampp/htdocs/itproject/DBconnect/Conn_accounts.php');
 
-// Check if form is submitted
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
@@ -16,6 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate inputs
     if (empty($email) || empty($password) || empty($user_type)) {
         die("<div class='alert alert-danger text-center'>All fields are required.</div>");
+    }
+
+    if (!preg_match('/@g\.cu\.edu\.ph$/', $email)) {
+        exit("<div class='alert alert-danger text-center'>Please use your CU corporate email.</div>");
     }
 
     // Validate email format
@@ -52,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Redirect to the appropriate dashboard
             if ($user_type == "Admin") {
-                header("Location: ../viewadmin.php"); // Admin Dashboard
+                header("Location: ../itproject/Admin/viewadmin.php"); // Admin Dashboard
             } elseif ($user_type == "Teacher") {
                 header("Location: teacher_dashboard.php"); // Teacher Dashboard
             } else {

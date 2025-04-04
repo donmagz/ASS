@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require('C:/xampp/htdocs/itproject/DBconnect/Conn_accounts.php'); // Include database connection file
+require('C:/xampp/htdocs/itproject/DBconnect/Conn_accounts.php'); 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get inputs
@@ -15,6 +15,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate inputs
     if (empty($username) || empty($password)) {
         die("<div class='alert alert-danger text-center'>All fields are required.</div>");
+    }
+
+    if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+        die("<div class='alert alert-danger text-center'>Invalid email format.</div>");
+    }
+
+    if (!preg_match('/@g\.cu\.edu\.ph$/', $username)) {
+        exit("<div class='alert alert-danger text-center'>Please use your CU corporate email.</div>");
     }
 
     // Prepare SQL statement to prevent SQL injection
@@ -76,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
         <div class="card p-4 shadow" style="width: 320px;">
             <h1 class="text-center">Admin Panel</h1>
-            <form method="POST" action="viewadmin.php"> 
+            <form method="POST" action="admin.php"> 
                 <div class="mb-3">
                     <input type="text" class="form-control" id="login-username" name="username" placeholder="Username" required>
                 </div>

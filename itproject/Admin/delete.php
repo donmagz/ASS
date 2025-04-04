@@ -2,17 +2,38 @@
 require 'C:/xampp/htdocs/itproject/DBconnect/Conn_accounts.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id']) && isset($_GET['type'])) {
-    $id = $_GET['student_id'] && $_GET['teacher_id'] && $_GET['admin_id'];
+    $id = $_GET['id'];  // ID of the user to delete
     $type = $_GET['type'];
-    $table = ($type === "student") ? "students" : (($type === "teacher") ? "teacher" : "admin");
 
-    // Delete query
-    $deleteQuery = "DELETE FROM $table WHERE student_id, teacher_id, admin_id=?";
+    // Determine the correct table and column for deletion
+    if ($type === "student") {
+        $table = "students";
+        $column = "student_id";
+    } elseif ($type === "teacher") {
+        $table = "teacher";
+        $column = "teacher_id";
+    } elseif ($type === "admin") {
+        $table = "admin";
+        $column = "admin_id";
+    } else {
+        die("Invalid user type.");
+    }
+
+    // Delete query with prepared statement
+    $deleteQuery = "DELETE FROM $table WHERE $column = ?";
     $stmt = $conn->prepare($deleteQuery);
     $stmt->bind_param("i", $id);
-    $stmt->execute();
+    
+    if ($stmt->execute()) {
+        header("Location: viewadmin.php");
+        exit();
+    } else {
+        echo "Error deleting record.";
+    }
 
-    header("Location: viewadmin.php");
-    exit();
+    $stmt->close();
+    $conn->close();
 }
+?>
+
 ?>

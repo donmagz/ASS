@@ -1,5 +1,5 @@
 <?php
-require("accounts.php"); // Make sure the database is created first before creating tables
+require("accounts.php");  // first
 
 $sql = "CREATE DATABASE IF NOT EXISTS accountsdb";
 $query = mysqli_query($conn, $sql);

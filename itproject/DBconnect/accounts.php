@@ -1,17 +1,18 @@
-<?php 
+<?php //second
 
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "accountsdb";
+$dbname = "accountsdb"; // make sure this database exist
 
-// Connect to MySQL
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+
 // if ($conn->connect_error) {
-//     echo "Not connected";
-// } else {
-//     echo "Connected";
-// }
+//     exit("Connection failed!");
+// } 
+
+// echo "Connected!";
 
 // ?>
+

@@ -9,16 +9,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = htmlspecialchars(trim($_POST['name']));
     $email = htmlspecialchars(trim($_POST['email']));
     $password = trim($_POST['password']);
+    $confirmPassword = trim($_POST['confirm_password']); // Ensure password confirmation
     $user_type = isset($_POST['user_type']) ? $_POST['user_type'] : '';
 
     // Validate inputs
-    if (empty($name) || empty($email) || empty($password) || empty($user_type)) {
-        die("<div class='alert alert-danger text-center'>All fields are required.</div>");
+    if (empty($name) || empty($email) || empty($password) || empty($confirmPassword) || empty($user_type)) {
+        exit("<div class='alert alert-danger text-center'>All fields are required.</div>");
     }
 
     // Validate email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        die("<div class='alert alert-danger text-center'>Invalid email format.</div>");
+        exit("<div class='alert alert-danger text-center'>Invalid email format.</div>");
+    }
+
+    // Check if email is a CU corporate email
+    if (!preg_match('/@g\.cu\.edu\.ph$/', $email)) {
+        exit("<div class='alert alert-danger text-center'>Please use your CU corporate email.</div>");
+    }
+
+    // Check password match
+    if ($password !== $confirmPassword) {
+        exit("<div class='alert alert-danger text-center'>Passwords do not match.</div>");
+    }
+
+    // Check password length
+    if (strlen($password) < 8) {
+        exit("<div class='alert alert-danger text-center'>Password must be at least 8 characters long.</div>");
     }
 
     // Hash the password for security
@@ -32,17 +48,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($user_type == "Admin") {
         $sql = "INSERT INTO admin (admin_name, admin_email, admin_password) VALUES (?, ?, ?)";
     } else {
-        die("<div class='alert alert-danger text-center'>Invalid user type selected.</div>");
+        exit("<div class='alert alert-danger text-center'>Invalid user type selected.</div>");
     }
 
     // Prepare SQL statement
     $statement = $conn->prepare($sql);
+    if (!$statement) {
+        exit("<div class='alert alert-danger text-center'>SQL error: " . $conn->error . "</div>");
+    }
+
     $statement->bind_param("sss", $name, $email, $hashed_password);
 
     // Execute and check for success
     if ($statement->execute()) {
-        // Redirect after success
-        echo "<div class='alert alert-success text-center'>Registration successful! Redirecting...<script>setTimeout(function(){ window.location.href = 'admin.php'; }, 2000);</script></div>";
+        echo "<div class='alert alert-success text-center'>Registration successful! Redirecting...</div>";
+        echo "<script>setTimeout(function(){ window.location.href = 'viewadmin.php'; }, 2000);</script>";
     } else {
         echo "<div class='alert alert-danger text-center'>Error: " . $statement->error . "</div>";
     }
@@ -131,7 +151,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link text-white" href="/itproject/Admin/Registration/registration.php">Create Account</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/itproject/Admin/admin.php">Admin Panel</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/itproject/aboutus.php">About Us</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/itproject/Login/login.php"><i class="fa-regular fa-user"></i> Log in</a></li>
@@ -168,6 +187,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <input type="password" class="form-control" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirm_password" required>
                 </div>
                 <button type="submit" class="btn btn-custom w-100 text-white">Register</button>
             </form>

@@ -1,3 +1,42 @@
+<?php
+session_start();
+
+require('C:/xampp/htdocs/itproject/DBconnect/Conn_accounts.php'); // Include database connection file
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get inputs
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+
+    // Sanitize inputs
+    $username = htmlspecialchars($username);
+    $password = htmlspecialchars($password);
+
+    // Validate inputs
+    if (empty($username) || empty($password)) {
+        die("<div class='alert alert-danger text-center'>All fields are required.</div>");
+    }
+
+    // Prepare SQL statement to prevent SQL injection
+    $sql = "SELECT * FROM admin WHERE admin_email = ? AND admin_password = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $username, $password);
+    
+    // Execute the statement
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if user exists
+    if ($result->num_rows > 0) {
+        $_SESSION['admin_username'] = $username; // Store session variable
+        header("Location: viewadmin.php"); // Redirect to admin dashboard
+        exit();
+    } else {
+        echo "<div class='alert alert-danger text-center'>Invalid username or password.</div>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -25,7 +64,6 @@
             <!-- Navigation Menu Items -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="\itproject\Admin\admin.php">Admin Panel</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="\itproject\aboutus.php">About Us</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="\itproject\Login\login.php"><i class="fa-regular fa-user"></i> Log in</a></li>
                 </ul>
@@ -38,16 +76,13 @@
     <div class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
         <div class="card p-4 shadow" style="width: 320px;">
             <h1 class="text-center">Admin Panel</h1>
-            <form action="\itproject\Admin\viewadmin.php">
-                <!-- Username Input -->
+            <form method="POST" action="viewadmin.php"> 
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="login-username" placeholder="Username" required>
+                    <input type="text" class="form-control" id="login-username" name="username" placeholder="Username" required>
                 </div>
-                <!-- Password Input -->
                 <div class="mb-3">
-                    <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                    <input type="password" class="form-control" id="login-password" name="password" placeholder="Password" required>
                 </div>
-                <!-- Submit Button -->
                 <button type="submit" class="btn btn-success w-100">Login</button>
             </form>
         </div>

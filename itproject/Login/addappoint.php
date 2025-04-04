@@ -123,6 +123,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success">Add Appointment</button>
                     <a href="viewappoint.php" class="btn btn-primary">View Appointments</a>
+                    <a href="login.php" class="btn btn-danger">Log out</a>
+
                 </div>
             </form>
         </div>

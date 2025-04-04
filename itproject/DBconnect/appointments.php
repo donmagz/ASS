@@ -9,6 +9,7 @@ $dbname = "appointmentdb";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
+
 // if ($conn) {
 //     echo "Database is created.";
 // } else {

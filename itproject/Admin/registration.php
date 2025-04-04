@@ -55,9 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($user_type == "Student") {
         $sql = "INSERT INTO students (student_name, student_email, user_password) VALUES (?, ?, ?)";
     } elseif ($user_type == "Teacher") {
-        $sql = "INSERT INTO teacher (teacher_name, teacher_email, teacher_password) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO teacher (teacher_name, teacher_email, user_password) VALUES (?, ?, ?)";
     } elseif ($user_type == "Admin") {
-        $sql = "INSERT INTO admin (admin_name, admin_email, admin_password) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO admin (admin_name, admin_email, user_password) VALUES (?, ?, ?)";
     } else {
         die("<div class='alert alert-danger text-center'>Invalid user type selected.</div>");
     }

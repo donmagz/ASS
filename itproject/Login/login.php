@@ -56,9 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Redirect to the appropriate dashboard
             if ($user_type == "Admin") {
-                header("Location: ../itproject/Admin/viewadmin.php"); // Admin Dashboard
+                header("Location: ../../itproject/Admin/viewadmin.php"); // Admin Dashboard
             } elseif ($user_type == "Teacher") {
-                header("Location: teacher_dashboard.php"); // Teacher Dashboard
+                header("Location: /itproject/Login/teacher/teacher.php"); // Teacher Dashboard
             } else {
                 header("Location: addappoint.php"); // Student Dashboard
             }
@@ -119,7 +119,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Navigation Menu Items -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="/itproject/Admin/admin.php">Admin Panel</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="/itproject/aboutus.php">About Us</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="/itproject/Login/login.php"><i class="fa-regular fa-user"></i> Log in</a></li>
                 </ul>

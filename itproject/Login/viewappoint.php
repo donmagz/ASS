@@ -1,11 +1,10 @@
 <?php
 session_start();
 
-
 require 'C:\xampp\htdocs\itproject\DBconnect\Conn_appointments.php';
 
 // Fetch appointments from database
-$sql = "SELECT Student_Name, Section, Appointment_Date, Student_ID, Description FROM appointments";
+$sql = "SELECT Student_Name, Section, Appointment_Date, Student_ID, Description FROM appointmentdb";
 $result = mysqli_query($conn, $sql);
 
 // Check for SQL errors
@@ -13,6 +12,17 @@ if (!$result) {
     die("Database query failed: " . mysqli_error($conn));
 }
 
+// If status is updated, set it in session (you can extend this logic later to save it permanently)
+if (isset($_GET['action']) && isset($_GET['id'])) {
+    $appointment_id = $_GET['id'];
+    $action = $_GET['action'];
+
+    // Save the status in the session (or in a temporary database table, as per your design)
+    $_SESSION['appointment_status'][$appointment_id] = $action;
+
+    header("Location: viewappoint.php");  // Redirect to avoid resubmission
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +41,7 @@ if (!$result) {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img class="logo me-2" src="../img/Alogo1.png" alt="Logo">
+                <img class="logo me-2" src="../img/Alogo1.jpg" alt="Logo">
                 <span class="text-white ms-2">Appointment Scheduling System</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -39,7 +49,6 @@ if (!$result) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="\itproject\Admin\admin.php">Admin Panel</a></li>
                     <li class="nav-item"><a class="nav-link" href="\itproject\aboutus.php">About Us</a></li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-light text-dark" href="\itproject\Login\login.php">
@@ -63,6 +72,8 @@ if (!$result) {
                         <th>Student ID</th>
                         <th>Date & Time</th>
                         <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,11 +85,26 @@ if (!$result) {
                                 <td><?php echo htmlspecialchars($row['Student_ID']); ?></td>
                                 <td><?php echo htmlspecialchars($row['Appointment_Date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['Description']); ?></td>
+
+                                <?php
+                                    // Check the session status for the appointment
+                                    $appointment_id = $row['Student_ID']; // Assuming Student_ID is unique for appointments
+                                    $status = isset($_SESSION['appointment_status'][$appointment_id]) ? $_SESSION['appointment_status'][$appointment_id] : 'Pending';
+                                ?>
+                                <td><?php echo $status; ?></td>
+                                <td>
+                                    <?php if ($status == 'Pending'): ?>
+                                        
+                                        <a href="viewappoint.php?action=cancel&id=<?php echo $appointment_id; ?>" class="btn btn-danger btn-sm">Cancel</a>
+                                    <?php elseif ($status == 'Accepted'): ?>
+                                        <a href="viewappoint.php?action=ongoing&id=<?php echo $appointment_id; ?>" class="btn btn-warning btn-sm">Ongoing</a>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="text-center">No appointments scheduled.</td>
+                            <td colspan="7" class="text-center">No appointments scheduled.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

@@ -22,7 +22,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     }
 }
 
-// Fetch appointment details with department and teacher name (join with teacher table)
+// Fetch appointment details with department and teacher name (joining tables)
 $sql = "SELECT 
             a.ID,
             a.student_name,

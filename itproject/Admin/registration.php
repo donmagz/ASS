@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\overall.php';
 $feedback = '';
 $targetDir = "uploads/";
+
 if (!is_dir($targetDir)) {
     mkdir($targetDir, 0755, true);
 }
@@ -25,9 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $tmpName = $_FILES['profile_image']['tmp_name'];
         $imagePath = $targetDir . $imageName;
 
-        move_uploaded_file($tmpName, $imagePath);
-    }
+     
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxFileSize = 2 * 1024 * 1024; // 2 MB
 
+        if (in_array($imageType, $allowedTypes) && $_FILES['profile_image']['size'] <= $maxFileSize) {
+            move_uploaded_file($tmpName, $imagePath);
+        } else {
+            $feedback = "<div class='alert alert-danger text-center'>Invalid file type or size. Only JPG, PNG, and GIF files are allowed (max 2MB).</div>";
+        }
+    }
 
     if (empty($name) || empty($email) || empty($password) || empty($confirm_password) || empty($user_type)) {
         $feedback = "<div class='alert alert-danger text-center'>All fields are required.</div>";
@@ -59,9 +67,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Insert into the appropriate table based on user type
             if ($user_type == "Student") {
-                $sql = "INSERT INTO students (student_name, student_email, user_password, profile_image) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO students (student_name, student_email, user_password, department_name, profile_image) VALUES (?, ?, ?, ?, ?)";
                 $statement = $conn->prepare($sql);
-                $statement->bind_param("ssss", $name, $email, $hashed_password, $imagePath);
+                $statement->bind_param("sssss", $name, $email, $hashed_password, $department, $imagePath);
             } elseif ($user_type == "Teacher") {
                 if (empty($department)) {
                     $feedback = "<div class='alert alert-danger text-center'>Department is required for teachers.</div>";
@@ -78,8 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             if ($statement && $statement->execute()) {
-                $feedback = "<div class='alert alert-success text-center'>Registration successful!
-                <script>setTimeout(function(){ window.location.href = 'viewadmin.php'; }, 2000);</script></div>";
+                $feedback = "<div class='alert alert-success text-center'>Registration successful!</div>";
             } else {
                 $feedback = "<div class='alert alert-danger text-center'>Error: " . $statement->error . "</div>";
             }
@@ -136,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="mb-3">
                 <label class="form-label">User Type</label>
-                <select name="user_type" id="user_type" class="form-control" onchange="showDepartment()">
+                <select name="user_type" id="user_type" class="form-control">
                     <option value="">Select User Type</option>
                     <option value="Student">Student</option>
                     <option value="Teacher">Teacher</option>
@@ -144,20 +151,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
 
-            <div class="mb-3" id="department_box" style="display: none;">
-                <label class="form-label">Department</label>
-                <select name="department" id="department" class="form-control">
-                    <option value="">Select Department</option>
-                    <option value="Computer Studies">Computer Studies</option>
-                    <option value="Education">Education</option>
-                    <option value="Business and Accountancy">Business and Accountancy</option>
-                    <option value="Maritime Education">Maritime Education</option>
-                    <option value="Criminology">Criminology</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Health and Sciences">Health and Sciences</option>
-                    <option value="Art and Sciences">Art and Sciences</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Department</label>
+                    <select name="department" id="department" class="form-control">
+                        <option value="">Select Department</option>
+                        <option value="Computer Studies">Computer Studies</option>
+                        <option value="Education">Education</option>
+                        <option value="Business and Accountancy">Business and Accountancy</option>
+                        <option value="Maritime Education">Maritime Education</option>
+                        <option value="Criminology">Criminology</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Health and Sciences">Health and Sciences</option>
+                        <option value="Art and Sciences">Art and Sciences</option>
+                    </select>
+                </div>
 
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
@@ -180,17 +187,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <button type="submit" class="btn btn-custom w-100 text-white">Register</button>
+            <button type="button" class="btn btn-secondary w-100 text-white" onclick="window.location.href='/itproject/Admin/viewadmin.php'">View Account</button><br>
         </form>
     </div>
 </div>
 
-<script>
-    function showDepartment() {
-        var userType = document.getElementById("user_type").value;
-        var departmentBox = document.getElementById("department_box");
-
-        departmentBox.style.display = (userType === "Teacher") ? "block" : "none";
-    }
-</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 14, 2025 at 12:29 PM
+-- Generation Time: Apr 17, 2025 at 12:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`admin_id`, `admin_name`, `admin_email`, `user_password`, `profile_image`, `registration_date`) VALUES
-(1, '3', '3@g.cu.edu.ph', '$2y$10$QnGjgmJNKZ15qaYLQpL7N.QtBT06GzBcnuG4c7qdWm1H9/n03dUDC', 'uploads/chrome.webp', '2025-04-14 10:28:40');
+(1, '3', '3@g.cu.edu.ph', '$2y$10$g6U2nypxbRDgOzZJeEuSkuYPPC/RtnBoxEAPRLKw6u/NyPHIyWdrO', 'uploads/chrome.webp', '2025-04-17 10:02:56');
 
 -- --------------------------------------------------------
 
@@ -97,6 +97,8 @@ CREATE TABLE `students` (
   `student_name` varchar(100) NOT NULL,
   `student_email` varchar(100) NOT NULL,
   `user_password` varchar(255) NOT NULL,
+  `department_id` int(11) DEFAULT NULL,
+  `department_name` varchar(100) NOT NULL,
   `profile_image` varchar(255) DEFAULT NULL,
   `registration_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -105,8 +107,8 @@ CREATE TABLE `students` (
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`student_id`, `student_name`, `student_email`, `user_password`, `profile_image`, `registration_date`) VALUES
-(1, '1', '1@g.cu.edu.ph', '$2y$10$CFv22ET49hqdOFTOoqWlXufueAcjPBolrBx80fMkb6MvLTH.7GZpa', 'uploads/aa.jpg', '2025-04-14 10:28:01');
+INSERT INTO `students` (`student_id`, `student_name`, `student_email`, `user_password`, `department_id`, `department_name`, `profile_image`, `registration_date`) VALUES
+(3, '1', '1@g.cu.edu.ph', '$2y$10$i3lWbvaVKAH8xu.VlUtSkuS8sDLUtEg35qC3lFBvrBNh3jnrcy7Oi', NULL, 'Computer Studies', 'uploads/1__y4BSlczZSLCkyOmCMC1Yw.png', '2025-04-17 10:21:15');
 
 -- --------------------------------------------------------
 
@@ -130,7 +132,7 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`teacher_id`, `teacher_name`, `teacher_email`, `user_password`, `department_id`, `department_name`, `profile_image`, `registration_date`) VALUES
-(2, '2', '2@g.cu.edu.ph', '$2y$10$gSZGtv5o.FIVV2vvzuTQrufYJ/s9zfWDfbIL42rK4N0UZy8ZN8OUW', NULL, 'Computer Studies', 'uploads/bot.png', '2025-04-14 10:28:23');
+(1, '2', '2@g.cu.edu.ph', '$2y$10$m3xhR0uT6VJW2dkB9mDFGuqxg4.FtAK27TdSwnjkpBRO8vJig1fJS', NULL, 'Maritime Education', 'uploads/bot.png', '2025-04-17 10:01:11');
 
 -- --------------------------------------------------------
 
@@ -230,19 +232,19 @@ ALTER TABLE `appointmentdb`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `teacher`
 --
 ALTER TABLE `teacher`
-  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `uploaded_images`

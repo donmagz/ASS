@@ -84,7 +84,7 @@ $conn->close();
             <input type="password" name="password" value="<?php echo htmlspecialchars($password); ?>" class="form-control" required>
         </div>
         <button href="viewadmin.php" type="submit" class="btn btn-success">Save Changes</button>
-        <a href="/itproject/Admin/uploads/viewadmin.php" class="btn btn-secondary">Cancel</a>
+        <a href="/itproject/Admin/viewadmin.php" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 </body>

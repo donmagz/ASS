@@ -6,6 +6,8 @@ $sql1 = "CREATE TABLE IF NOT EXISTS students (
     student_name VARCHAR(100) NOT NULL,
     student_email VARCHAR(100) NOT NULL UNIQUE,
     user_password VARCHAR(255) NOT NULL,
+    department_id INT,
+    department_name VARCHAR(100) NOT NULL,
     profile_image VARCHAR(255) DEFAULT NULL,
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";

@@ -7,6 +7,12 @@ $error_message = "";
 $instructors = [];
 $action = $_POST['action'] ?? '';
 
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 'Student') {
+    header("Location: /itproject/Login/login.php");
+    exit();
+}
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['department_name'])) {
         $department_selected = mysqli_real_escape_string($conn, $_POST['department_name']);
@@ -21,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($action === "submit") {
         $name = trim($_POST['name']);
-        $id = trim($_POST['IDnumber']);
+        $id = trim($_POST['email']);
         $section = trim($_POST['section']);
         $date = $_POST['date'];
         $time = $_POST['time'];
@@ -102,8 +108,8 @@ $conn->close();
                 <input type="text" name="name" class="form-control" value="<?php echo $_POST['name'] ?? ''; ?>" >
             </div>
             <div class="mb-3">
-                <label class="form-label">ID Number</label>
-                <input type="number" name="IDnumber" class="form-control" value="<?php echo $_POST['IDnumber'] ?? ''; ?>" >
+                <label class="form-label">Email Account</label>
+                <input type="text" name="email" class="form-control" value="<?php echo $_POST['email'] ?? ''; ?>" >
             </div>
             <div class="mb-3">
                 <label class="form-label">Section</label>

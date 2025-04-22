@@ -1,7 +1,15 @@
 <?php
+
+require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\overall.php';
+
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 'Admin') {
+    header("Location: /itproject/Login/login.php");
+    exit();
+}
 
 require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\overall.php';
 $feedback = '';
@@ -65,7 +73,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-            // Insert into the appropriate table based on user type
             if ($user_type == "Student") {
                 $sql = "INSERT INTO students (student_name, student_email, user_password, department_name, profile_image) VALUES (?, ?, ?, ?, ?)";
                 $statement = $conn->prepare($sql);

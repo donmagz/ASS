@@ -3,10 +3,10 @@
 session_start();
 
 // Optional: Admin access check (uncomment if needed)
-// if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 'Admin') {
-//     header("Location: /itproject/Login/login.php");
-//     exit();
-// }
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 'Admin') {
+    header("Location: /itproject/Login/login.php");
+    exit();
+}
 
 
 require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\overall.php';

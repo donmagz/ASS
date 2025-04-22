@@ -1,51 +1,49 @@
 <?php
 session_start();
+require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\Conn_overall.php';
 
 if (!isset($_SESSION['teacher_name'])) {
     header("Location: /itproject/Login/login.php");
     exit;
 }
 
-require 'C:\xampp\htdocs\itproject\DBconnect\Accounts\Conn_overall.php';
-
-$teacherName = $_SESSION['teacher_name'];  
-
+$teacherName = $_SESSION['teacher_name'];
 
 if (isset($_GET['action']) && isset($_GET['id'])) {
-    $studentId = $_GET['id'];
+    $appointmentId = $_GET['id'];
 
-    // If action is 'accept', update the appointment status to 'Ongoing'
     if ($_GET['action'] == 'accept') {
-        $sql = "UPDATE appointmentdb SET Status = 'Ongoing' WHERE Student_ID = ? AND teacher_name = ?";
+        $sql = "UPDATE appointmentdb SET Status = 'Ongoing' WHERE ID = ? AND teacher_name = ?";
         $statement = $conn->prepare($sql);
-        $statement->bind_param("is", $studentId, $teacherName); 
-
+        $statement->bind_param("is", $appointmentId, $teacherName);
         if ($statement->execute()) {
-            echo "<div class='alert alert-success text-center'>Appointment Accepted!</div>";
             header("Location: teacher.php");
             exit();
-        } else {
-            echo "<div class='alert alert-danger text-center'>Failed to accept the appointment.</div>";
         }
     }
 
-    // If action is 'complete', update the appointment status to 'Completed'
     if ($_GET['action'] == 'complete') {
-        $sql = "UPDATE appointmentdb SET Status = 'Completed' WHERE Student_ID = ? AND teacher_name = ?";
+        $sql = "UPDATE appointmentdb SET Status = 'Completed' WHERE ID = ? AND teacher_name = ?";
         $statement = $conn->prepare($sql);
-        $statement->bind_param("is", $studentId, $teacherName);
-
+        $statement->bind_param("is", $appointmentId, $teacherName);
         if ($statement->execute()) {
-            echo "<div class='alert alert-success text-center'>Appointment Completed!</div>";
-            header("Location: teacher.php"); 
-        } else {
-            echo "<div class='alert alert-danger text-center'>Failed to complete the appointment.</div>";
+            header("Location: teacher.php");
+            exit();
+        }
+    }
+
+    if ($_GET['action'] == 'cancel') {
+        $sql = "UPDATE appointmentdb SET Status = 'Cancelled' WHERE ID = ? AND teacher_name = ?";
+        $statement = $conn->prepare($sql);
+        $statement->bind_param("is", $appointmentId, $teacherName);
+        if ($statement->execute()) {
+            header("Location: teacher.php");
+            exit();
         }
     }
 }
 
-
-$sql = "SELECT Student_Name, Section, Appointment_Date, Student_ID, Description, Status FROM appointmentdb WHERE teacher_name = ?";
+$sql = "SELECT ID, Student_Name, Section, Appointment_Date, Student_ID, Description, Status FROM appointmentdb WHERE teacher_name = ?";
 $statement = $conn->prepare($sql);
 $statement->bind_param("s", $teacherName);
 $statement->execute();
@@ -58,14 +56,14 @@ if ($result === false) {
 $appointments = [
     'Pending' => [],
     'Ongoing' => [],
-    'Completed' => []
+    'Completed' => [],
+    'Cancelled' => []
 ];
 
 while ($row = $result->fetch_assoc()) {
     $appointments[$row['Status']][] = $row;
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -100,6 +98,7 @@ while ($row = $result->fetch_assoc()) {
 
 <div class="container mt-5 bg-semi-transparent">
     <h2 class="mb-3 text-center">Manage Appointments</h2>
+
     <h4>Pending Appointments</h4>
     <div class="table-responsive">
         <table class="table table-bordered">
@@ -116,14 +115,14 @@ while ($row = $result->fetch_assoc()) {
             <tbody>
                 <?php foreach ($appointments['Pending'] as $row): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['Student_Name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Section']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Student_ID']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Appointment_Date']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Description']); ?></td>
+                        <td><?= htmlspecialchars($row['Student_Name']) ?></td>
+                        <td><?= htmlspecialchars($row['Section']) ?></td>
+                        <td><?= htmlspecialchars($row['Student_ID']) ?></td>
+                        <td><?= htmlspecialchars($row['Appointment_Date']) ?></td>
+                        <td><?= htmlspecialchars($row['Description']) ?></td>
                         <td>
-                            <a href="teacher.php?action=accept&id=<?php echo $row['Student_ID']; ?>" class="btn btn-success btn-sm">Accept</a>
-                            <a href="teacher.php?action=cancel&id=<?php echo $row['Student_ID']; ?>" class="btn btn-danger btn-sm">Cancel</a>
+                            <a href="teacher.php?action=accept&id=<?= $row['ID'] ?>" class="btn btn-success btn-sm">Accept</a>
+                            <a href="teacher.php?action=cancel&id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm">Cancel</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -147,20 +146,19 @@ while ($row = $result->fetch_assoc()) {
             <tbody>
                 <?php foreach ($appointments['Ongoing'] as $row): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['Student_Name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Section']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Student_ID']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Appointment_Date']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Description']); ?></td>
+                        <td><?= htmlspecialchars($row['Student_Name']) ?></td>
+                        <td><?= htmlspecialchars($row['Section']) ?></td>
+                        <td><?= htmlspecialchars($row['Student_ID']) ?></td>
+                        <td><?= htmlspecialchars($row['Appointment_Date']) ?></td>
+                        <td><?= htmlspecialchars($row['Description']) ?></td>
                         <td>
-                            <a href="teacher.php?action=complete&id=<?php echo $row['Student_ID']; ?>" class="btn btn-primary btn-sm">Complete</a>
+                            <a href="teacher.php?action=complete&id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm">Complete</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
 
     <h4 class="mt-4">Completed Appointments</h4>
     <div class="table-responsive">
@@ -178,18 +176,49 @@ while ($row = $result->fetch_assoc()) {
             <tbody>
                 <?php foreach ($appointments['Completed'] as $row): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['Student_Name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Section']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Student_ID']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Appointment_Date']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Description']); ?></td>
+                        <td><?= htmlspecialchars($row['Student_Name']) ?></td>
+                        <td><?= htmlspecialchars($row['Section']) ?></td>
+                        <td><?= htmlspecialchars($row['Student_ID']) ?></td>
+                        <td><?= htmlspecialchars($row['Appointment_Date']) ?></td>
+                        <td><?= htmlspecialchars($row['Description']) ?></td>
                         <td><span class="badge bg-success">Completed</span></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
+
+    <?php if (!empty($appointments['Cancelled'])): ?>
+    <h4 class="mt-4">Cancelled Appointments</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Section</th>
+                    <th>Student ID</th>
+                    <th>Date & Time</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($appointments['Cancelled'] as $row): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['Student_Name']) ?></td>
+                        <td><?= htmlspecialchars($row['Section']) ?></td>
+                        <td><?= htmlspecialchars($row['Student_ID']) ?></td>
+                        <td><?= htmlspecialchars($row['Appointment_Date']) ?></td>
+                        <td><?= htmlspecialchars($row['Description']) ?></td>
+                        <td><span class="badge bg-danger">Cancelled</span></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
 </div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
